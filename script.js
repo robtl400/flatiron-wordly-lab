@@ -1,7 +1,7 @@
-// Wait for the page to load
+
 document.addEventListener('DOMContentLoaded', function() {
   
-  // Get all elements we need
+  // Get elements
   const searchForm = document.getElementById('search-form');
   const wordInput = document.getElementById('word-input');
   const errorMessage = document.getElementById('error-message');
@@ -17,16 +17,15 @@ document.addEventListener('DOMContentLoaded', function() {
   
   let audioUrl = '';
   
-  // Listen for form submission
+  // Form submission
   searchForm.addEventListener('submit', function(event) {
     event.preventDefault();
     
-    // Get the word the user typed
+    // Get the word
     const word = wordInput.value.trim().toLowerCase();
-    
-    // Check if word is empty
+
     if (word === '') {
-      showError('Please enter a word to search');
+      showError('Please enter word');
       return;
     }
     
@@ -34,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
     searchWord(word);
   });
   
-  // Listen for audio button click
+  // Audio button
   audioButton.addEventListener('click', function() {
     if (audioUrl) {
       const audio = new Audio(audioUrl);
@@ -42,13 +41,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-  // Function to search for a word
+
   function searchWord(word) {
-    // Hide previous results and errors
+
     hideError();
     hideResults();
     
-    // Fetch data from the dictionary API
+    // Fetch data from API
     fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
       .then(function(response) {
         if (!response.ok) {
@@ -57,27 +56,23 @@ document.addEventListener('DOMContentLoaded', function() {
         return response.json();
       })
       .then(function(data) {
-        // Display the word data
         displayResults(data[0]);
       })
       .catch(function(error) {
-        showError('Sorry, we could not find that word. Please try another one.');
+        showError('That is not a word. Please try again');
       });
   }
   
   // Function to display results
   function displayResults(data) {
-    // Display the word
     wordTitle.textContent = data.word;
     
-    // Display phonetic
     if (data.phonetic) {
       phoneticText.textContent = data.phonetic;
     } else {
       phoneticText.textContent = '';
     }
     
-    // Check for audio pronunciation
     audioUrl = '';
     if (data.phonetics && data.phonetics.length > 0) {
       for (let i = 0; i < data.phonetics.length; i++) {
@@ -93,10 +88,8 @@ document.addEventListener('DOMContentLoaded', function() {
       audioButton.classList.add('hidden');
     }
     
-    // Clear previous definitions
     definitionsContainer.innerHTML = '';
     
-    // Display definitions
     if (data.meanings && data.meanings.length > 0) {
       for (let i = 0; i < data.meanings.length; i++) {
         const meaning = data.meanings[i];
@@ -105,12 +98,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const meaningDiv = document.createElement('div');
         meaningDiv.className = 'definition-item';
         
-        // Add part of speech
         const partOfSpeech = document.createElement('h3');
         partOfSpeech.textContent = meaning.partOfSpeech;
         meaningDiv.appendChild(partOfSpeech);
         
-        // Add definitions
+        // Definitions
         if (meaning.definitions && meaning.definitions.length > 0) {
           for (let j = 0; j < meaning.definitions.length; j++) {
             const def = meaning.definitions[j];
@@ -153,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
       synonymsSection.classList.add('hidden');
     }
     
-    // Display source link
+    // Source
     if (data.sourceUrls && data.sourceUrls.length > 0) {
       sourceLink.href = data.sourceUrls[0];
       sourceSection.classList.remove('hidden');
@@ -161,24 +153,21 @@ document.addEventListener('DOMContentLoaded', function() {
       sourceSection.classList.add('hidden');
     }
     
-    // Show results
     results.classList.remove('hidden');
   }
   
-  // Function to show error message
+  // Error function
   function showError(message) {
     errorMessage.textContent = message;
     errorMessage.classList.remove('hidden');
     hideResults();
   }
   
-  // Function to hide error message
   function hideError() {
     errorMessage.textContent = '';
     errorMessage.classList.add('hidden');
   }
   
-  // Function to hide results
   function hideResults() {
     results.classList.add('hidden');
   }
